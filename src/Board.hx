@@ -3,6 +3,9 @@ package ;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
+import flash.text.TextField;
+import flash.text.TextFieldAutoSize;
+import flash.text.TextFormat;
 import nape.geom.AABB;
 import nape.geom.Vec2;
 import nape.phys.Body;
@@ -10,6 +13,7 @@ import nape.phys.BodyType;
 import nape.shape.Polygon;
 import nape.space.Space;
 import nape.util.BitmapDebug;
+import openfl.Assets;
 
 class Board extends Sprite
 {
@@ -20,7 +24,9 @@ class Board extends Sprite
 	
 	var space:Space;
 	var pieces:List<Piece>;
-	
+	var score = 0;
+	var gameOver = false;
+
 	public function new() {
 		super();
 		
@@ -61,25 +67,57 @@ class Board extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 	}
 	
-	public function onKeyDown(e:KeyboardEvent) {
+	public function destroy() {
+		removeEventListener(Event.ENTER_FRAME, tick);
+		stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+	}
+	
+	private function setGravity(x,y) {
 		var power = 800;
+		space.gravity.setxy(power*x, power*y);
+	}
+	
+	private function restart() {
+		if (gameOver) {
+			var p = parent;
+			destroy();
+			p.removeChild(this);
+			var board = new Board();
+			p.addChild(board);
+			board.init();
+		}
+	}
+	
+	public function onKeyDown(e:KeyboardEvent) {
 		switch(Std.int(e.keyCode)) {
-			case 37:
-				space.gravity.setxy(-power, 0);
-			case 38:
-				space.gravity.setxy(0, -power);
-			case 39:
-				space.gravity.setxy(power, 0);
-			case 40:
-				space.gravity.setxy(0, power);
+			case 37, 65:
+				setGravity(-1,0);
+			case 38, 87:
+				setGravity(0,-1);
+			case 39, 68:
+				setGravity(1,0);
+			case 40, 83:
+				setGravity(0, 1);
+			case 32, 82:
+				restart();
 			default:
 				trace(e.keyCode);
 		}
 	}
 	
 	public function onKeyUp(e:KeyboardEvent) {
-		space.gravity.setxy(0, 0);
-		addRandom();
+		switch(Std.int(e.keyCode)) {
+			case 37, 65, 38, 87, 39, 68, 40, 83:
+				turnOffGravity();
+		}
+	}
+	
+	function turnOffGravity() {
+		if(!gameOver) {
+			space.gravity.setxy(0, 0);
+			addRandom();
+		}
 	}
 	
 	public function addRandom() {
@@ -92,7 +130,7 @@ class Board extends Sprite
 			}
 		}
 		if (freePlaces.length == 0) {
-			
+			endGame();
 		} else {
 			var place = freePlaces[Std.int(Math.random() * freePlaces.length)];
 			var piece = addPiece(Std.int(place.x), Std.int(place.y), Math.random() > 0.9?2:1);
@@ -100,7 +138,37 @@ class Board extends Sprite
 		}
 	}
 	
+	private function endGame() {
+		gameOver = true;
+		var format = new TextFormat();
+		format.font = Assets.getFont("fonts/FreeSans.ttf").fontName;
+		
+		format.size = 48;
+		format.color = 0;
+		
+		var sprite = new Sprite();
+		sprite.graphics.beginFill(0xffffff, 0.25);
+		sprite.graphics.drawRect(0, 0, width, height);
+		sprite.graphics.endFill();
+		
+		var text = new TextField();
+		text.defaultTextFormat = format;
+		text.text = "Game Over!";
+		text.selectable = false;
+		text.autoSize = TextFieldAutoSize.LEFT;
+		text.embedFonts = true;
+		sprite.addChild(text);
+		text.x = (sprite.width - text.width) / 2;
+		text.y = (sprite.height - text.height) / 2;
+		addChild(sprite);
+	}
+	
 	public function tick(?_) {
+		
+		if (gameOver) {
+			return;
+		}
+		
 		space.step(1.0 / 60.0);
 		
 		for ( a in pieces ) {
@@ -133,6 +201,7 @@ class Board extends Sprite
 		piece.body.space = space;
 		pieces.add(piece);
 		addChild(piece);
+		score += piece.n;
 	}
 	
 	public function addPiece(x, y, n) {
