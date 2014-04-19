@@ -12,8 +12,7 @@ import nape.phys.BodyType;
 import nape.shape.Polygon;
 import openfl.Assets;
 
-class Piece extends Sprite
-{
+class Piece extends Sprite {
 
 	public var n:Int;
 	public var body:Body;

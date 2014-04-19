@@ -15,8 +15,7 @@ import nape.space.Space;
 import nape.util.BitmapDebug;
 import openfl.Assets;
 
-class Board extends Sprite
-{
+class Board extends Sprite {
 
 	static var size = 107;
 	static var pad = size + 14;
