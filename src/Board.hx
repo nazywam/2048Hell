@@ -101,8 +101,6 @@ class Board extends Sprite {
 				setGravity(0, 1);
 			case 32, 82:
 				restart();
-			default:
-				trace(e.keyCode);
 		}
 	}
 	
@@ -121,10 +119,12 @@ class Board extends Sprite {
 	}
 	
 	public function addRandom() {
+		var margin = 25;
 		var freePlaces = [];
 		for (x in 0...4) {
 			for ( y in 0...4) {
-				if (space.bodiesInAABB(new AABB(offset + pad * x, offset + pad * y, size, size)).empty()) {
+				var box = new AABB(offset + pad * x + margin, offset + pad * y + margin, size - margin * 2 , size - margin * 2);
+				if (space.bodiesInAABB(box).empty()) {
 					freePlaces.push(new Vec2(x, y));
 				}
 			}
