@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="2048 hell" package="hell" version="1.0.0" company="" />
+	<meta title="2048 Hell" package="com.github.banthar.hell2048" version="0.0.0" company="" />
 	
 	<app main="Main" file="2048hell" path="bin" />
 	

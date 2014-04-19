@@ -3,6 +3,7 @@ package ;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
+import nape.geom.AABB;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.phys.BodyType;
@@ -82,9 +83,21 @@ class Board extends Sprite
 	}
 	
 	public function addRandom() {
-		var x = Std.int(Math.random() * 4);
-		var y = Std.int(Math.random() * 4);
-		addPiece(x, y, Math.random() > 0.9?2:1);
+		var freePlaces = [];
+		for (x in 0...4) {
+			for ( y in 0...4) {
+				if (space.bodiesInAABB(new AABB(offset + pad * x, offset + pad * y, size, size)).empty()) {
+					freePlaces.push(new Vec2(x, y));
+				}
+			}
+		}
+		if (freePlaces.length == 0) {
+			
+		} else {
+			var place = freePlaces[Std.int(Math.random() * freePlaces.length)];
+			var piece = addPiece(Std.int(place.x), Std.int(place.y), Math.random() > 0.9?2:1);
+			piece.scaleDown();
+		}
 	}
 	
 	public function tick(?_) {
@@ -128,5 +141,6 @@ class Board extends Sprite
 		piece.body.space = space;
 		pieces.add(piece);
 		addChild(piece);
+		return piece;
 	}
 }

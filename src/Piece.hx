@@ -57,12 +57,19 @@ class Piece extends Sprite
 		var shape = new Polygon(Polygon.box(109, 109));
 		shape.filter.collisionMask = (1 << n);
 		shape.filter.collisionGroup = ~ (1 << n);
-		body.shapes.add(shape);
-		
-		
+		body.shapes.add(shape);		
+	}
+	
+	public function scaleDown() {
+		scaleX = 0.1;
+		scaleY = 0.1;
 	}
 	
 	public function tick() {
+		if (scaleX < 1) {
+			scaleX += 0.1;
+			scaleY = scaleX;
+		}
 		x = body.position.x;
 		y = body.position.y;
 		rotation = 180 * body.rotation / Math.PI;
