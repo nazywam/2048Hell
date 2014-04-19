@@ -3,6 +3,9 @@ class Kongregate {
     var kongregate:Dynamic;
 
     public function new() {
+
+#if kongregate
+
         var parameters = flash.Lib.current.loaderInfo.parameters;
         var url:String;
         
@@ -19,6 +22,9 @@ class Kongregate {
         loader.load(request);
 
         flash.Lib.current.addChild(loader);
+
+#end
+
     }
 
     function onLoadComplete(e: flash.events.Event) {
