@@ -171,7 +171,7 @@ class Board extends Sprite {
 			return;
 		}
 		
-		space.step(1.0 / 60.0);
+		space.step(1.0 / 30.0);
 		
 		for ( a in pieces ) {
 			for ( b in pieces ) {
