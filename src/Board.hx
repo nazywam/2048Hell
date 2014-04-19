@@ -24,6 +24,7 @@ class Board extends Sprite {
 	var space:Space;
 	var pieces:List<Piece>;
 	var score = 0;
+	var maxN = 0;
 	var gameOver = false;
 
 	public function new() {
@@ -160,6 +161,8 @@ class Board extends Sprite {
 		text.x = (sprite.width - text.width) / 2;
 		text.y = (sprite.height - text.height) / 2;
 		addChild(sprite);
+		Main.kongregate.submitStat("score", score);
+		Main.kongregate.submitStat("maxN", maxN);
 	}
 	
 	public function tick(?_) {
@@ -201,6 +204,7 @@ class Board extends Sprite {
 		pieces.add(piece);
 		addChild(piece);
 		score += piece.n;
+		maxN = Math.max(piece.n, maxN);
 	}
 	
 	public function addPiece(x, y, n) {
