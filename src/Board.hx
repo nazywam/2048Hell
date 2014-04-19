@@ -24,7 +24,7 @@ class Board extends Sprite {
 	var space:Space;
 	var pieces:List<Piece>;
 	var score = 0;
-	var maxN = 0;
+	var maxN = 0.0;
 	var gameOver = false;
 
 	public function new() {
