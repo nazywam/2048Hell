@@ -1,6 +1,9 @@
-2048 Hell
+2048 Hell-Android
 ========
-android version
+HaXe libraries needed:
+openfl
+nape
+svg
 ========
 Based on:
 http://gabrielecirulli.github.io/2048/
