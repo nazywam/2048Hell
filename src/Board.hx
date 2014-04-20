@@ -56,7 +56,7 @@ class Board extends Sprite {
 			}
 		}
 		
-		//addRandom();//DEBUG
+		addRandom();
 
 		var wall = new Body(BodyType.STATIC);
 		var f = function(shape:Polygon) {
@@ -69,23 +69,6 @@ class Board extends Sprite {
 		f(new Polygon(Polygon.rect(-500+12, -500, 500, 1500)));
 		f(new Polygon(Polygon.rect(500 - 12, -500, 500, 1500)));
 		wall.space = space;
-
-
-		//DEBUG
-
-		addPiece(0,0,1);
-		addPiece(0,1,2);
-		addPiece(0,2,3);
-		addPiece(0,3,4);
-		addPiece(1,0,5);
-		addPiece(1,1,6);
-		addPiece(1,2,7);
-		addPiece(1,3,8);
-		addPiece(2,0,9);
-		addPiece(2,1,10);
-		addPiece(2,2,11);
-		
-
 
 	}
 	

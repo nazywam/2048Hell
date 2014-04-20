@@ -2,11 +2,6 @@ package ;
 
 import flash.display.Shape;
 import flash.display.Sprite;
-import flash.text.TextField;
-import flash.text.TextFieldAutoSize;
-import flash.text.TextFormat;
-import flash.text.TextFormatAlign;
-import flash.text.AntiAliasType;
 import nape.phys.Body;
 import nape.phys.BodyType;
 import nape.shape.Polygon;
@@ -32,21 +27,19 @@ class Piece extends Sprite {
 		
 
 		var colors = [0, 0xeee4da, 0xede0c8, 0xf2b179, 0xf59563, 0xf67c5f, 0xf65e3b, 0xedcf72, 0xedcc61, 0xedc850, 0xedc53f, 0xedc22e, 0x3c3a32];
-		//            0 	 2 		  4          8        16         32        64        128      256       512      1024       2048
 		var fontColor = [0, 0x776e65, 0x776e65, 0xffffff];
-
 		var fontSize = [0, 55, 55, 55, 55, 55, 55, 45, 45, 45, 35];
-		//				0  2   4    8  16   32  64  128 256 512 1024
+		
 		var size = 107;
 		
 		super();
 		this.n = n;
 
 		svg = new SVG(openfl.Assets.getText("pieces/" + Std.string(Math.pow(2, n)) + ".svg"));
-		svg.render(this.graphics, -size/2,-size/2,size,size);
+		svg.render(this.graphics, -size/2+3,-size/2+3,size,size);
 
 		body = new Body(BodyType.DYNAMIC);
-		var shape = new Polygon(Polygon.box(109, 109));
+		var shape = new Polygon(Polygon.box(107, 107));
 		shape.filter.collisionMask = (1 << n);
 		shape.filter.collisionGroup = ~ (1 << n);
 		body.shapes.add(shape);
@@ -60,10 +53,7 @@ class Piece extends Sprite {
 		scaleX = 0.1;
 		scaleY = 0.1;
 	}
-	public function render() {
-		//svg.data = new SVGData(Xml.parse(openfl.Assets.getText("pieces/2.svg")));
-		//svg.render(this.graphics, -size/2,-size/2,size,size);
-	}
+	
 	public function tick() {
 		if (scaleX < 1) {
 			scaleX += 0.1;
