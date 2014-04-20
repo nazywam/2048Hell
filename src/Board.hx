@@ -3,6 +3,7 @@ package ;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
+import flash.events.MouseEvent;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
@@ -27,9 +28,19 @@ class Board extends Sprite {
 	var maxN = 0;
 	var gameOver = false;
 
+	var mouseStartX : Float;
+	var mouseStartY : Float;
+	var mouseActive : Bool;
+
+	var gravityX : Int;
+	var fravityY : Int;
 	public function new() {
 		super();
 		
+		scaleX = scaleY = Math.min(flash.Lib.current.stage.stageWidth/500, flash.Lib.current.stage.stageHeight/500);
+
+		mouseActive = false;
+
 		pieces = new List();
 		space = new Space(new Vec2(0, 0));
 		
@@ -45,7 +56,7 @@ class Board extends Sprite {
 			}
 		}
 		
-		addRandom();
+		//addRandom();//DEBUG
 
 		var wall = new Body(BodyType.STATIC);
 		var f = function(shape:Polygon) {
@@ -59,18 +70,43 @@ class Board extends Sprite {
 		f(new Polygon(Polygon.rect(500 - 12, -500, 500, 1500)));
 		wall.space = space;
 
+
+		//DEBUG
+
+		addPiece(0,0,1);
+		addPiece(0,1,2);
+		addPiece(0,2,3);
+		addPiece(0,3,4);
+		addPiece(1,0,5);
+		addPiece(1,1,6);
+		addPiece(1,2,7);
+		addPiece(1,3,8);
+		addPiece(2,0,9);
+		addPiece(2,1,10);
+		addPiece(2,2,11);
+		
+
+
 	}
 	
 	public function init() {
 		addEventListener(Event.ENTER_FRAME, tick);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+
+		addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 	}
 	
 	public function destroy() {
 		removeEventListener(Event.ENTER_FRAME, tick);
 		stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+
+		removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 	}
 	
 	private function setGravity(x,y) {
@@ -88,7 +124,36 @@ class Board extends Sprite {
 			board.init();
 		}
 	}
-	
+	public function onMouseDown(e:MouseEvent) {
+		mouseStartX = e.stageX;
+		mouseStartY = e.stageY;
+
+		mouseActive = true;
+	}
+	public function onMouseMove(e:MouseEvent) {
+		if(mouseActive){
+			if(Math.abs(e.stageX-mouseStartX)>100){
+				if(e.stageX > mouseStartX){
+						setGravity(1,0); //right flick
+					} else {
+						setGravity(-1,0); //left flick
+
+				}
+			}
+			else if(Math.abs(e.stageY-mouseStartY)>100){
+				if(e.stageY > mouseStartY){
+						setGravity(0,1); // up flick
+					} else {
+						setGravity(0,-1); //down flick
+				}
+			}
+		}
+	}
+	public function onMouseUp(e:MouseEvent) {
+		turnOffGravity();
+		mouseActive = false;
+	}
+
 	public function onKeyDown(e:KeyboardEvent) {
 		switch(Std.int(e.keyCode)) {
 			case 37, 65:
