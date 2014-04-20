@@ -1,6 +1,6 @@
 2048 Hell
 ========
-android version by nazywam
+android version
 ========
 Based on:
 http://gabrielecirulli.github.io/2048/
