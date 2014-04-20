@@ -34,11 +34,13 @@ class Board extends Sprite {
 
 	var gravityX : Int;
 	var fravityY : Int;
+
+	var scale : Float;
 	public function new() {
 		super();
 		
 		scaleX = scaleY = Math.min(flash.Lib.current.stage.stageWidth/500, flash.Lib.current.stage.stageHeight/500);
-
+		scale = scaleX;
 		mouseActive = false;
 
 		pieces = new List();
@@ -135,6 +137,9 @@ class Board extends Sprite {
 	public function onMouseUp(e:MouseEvent) {
 		turnOffGravity();
 		mouseActive = false;
+		if(gameOver){
+			restart();
+		}
 	}
 
 	public function onKeyDown(e:KeyboardEvent) {
@@ -206,8 +211,9 @@ class Board extends Sprite {
 		text.autoSize = TextFieldAutoSize.LEFT;
 		text.embedFonts = true;
 		sprite.addChild(text);
-		text.x = (sprite.width - text.width) / 2;
-		text.y = (sprite.height - text.height) / 2;
+		text.x = sprite.width / (2*scale) - text.width/2;
+		text.y = (sprite.height - text.height) / (2*scale);
+
 		addChild(sprite);
 		Main.kongregate.submitStat("score", score);
 		Main.kongregate.submitStat("maxN", 1 << maxN);

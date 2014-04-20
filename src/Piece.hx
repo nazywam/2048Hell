@@ -23,13 +23,6 @@ class Piece extends Sprite {
 	
 	public function new(n) 
 	{
-
-		
-
-		var colors = [0, 0xeee4da, 0xede0c8, 0xf2b179, 0xf59563, 0xf67c5f, 0xf65e3b, 0xedcf72, 0xedcc61, 0xedc850, 0xedc53f, 0xedc22e, 0x3c3a32];
-		var fontColor = [0, 0x776e65, 0x776e65, 0xffffff];
-		var fontSize = [0, 55, 55, 55, 55, 55, 55, 45, 45, 45, 35];
-		
 		var size = 107;
 		
 		super();
@@ -43,10 +36,6 @@ class Piece extends Sprite {
 		shape.filter.collisionMask = (1 << n);
 		shape.filter.collisionGroup = ~ (1 << n);
 		body.shapes.add(shape);
-
-		
-		
-
 	}
 	
 	public function scaleDown() {
