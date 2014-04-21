@@ -41,6 +41,7 @@ class Board extends Sprite {
 		
 		scaleX = scaleY = Math.min(flash.Lib.current.stage.stageWidth/500, flash.Lib.current.stage.stageHeight/500);
 		scale = scaleX;
+
 		mouseActive = false;
 
 		pieces = new List();
@@ -72,6 +73,11 @@ class Board extends Sprite {
 		f(new Polygon(Polygon.rect(500 - 12, -500, 500, 1500)));
 		wall.space = space;
 
+		if(Math.abs(width-flash.Lib.current.stage.stageWidth) > Math.abs(height-flash.Lib.current.stage.stageHeight)){
+			x = (flash.Lib.current.stage.stageWidth - width)/2;
+		} else {
+			y = (flash.Lib.current.stage.stageHeight - height)/2;
+		}
 	}
 	
 	public function init() {
@@ -79,9 +85,9 @@ class Board extends Sprite {
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
-		addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-		addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-		addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 	}
 	
 	public function destroy() {
@@ -89,9 +95,9 @@ class Board extends Sprite {
 		stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
-		removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-		removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-		removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+		stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+		stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 	}
 	
 	private function setGravity(x,y) {
@@ -110,6 +116,7 @@ class Board extends Sprite {
 		}
 	}
 	public function onMouseDown(e:MouseEvent) {
+		trace(("click " + Std.string(e.stageX) + " " + Std.string(e.stageY)));
 		mouseStartX = e.stageX;
 		mouseStartY = e.stageY;
 
@@ -122,24 +129,24 @@ class Board extends Sprite {
 						setGravity(1,0); //right flick
 					} else {
 						setGravity(-1,0); //left flick
-
 				}
 			}
 			else if(Math.abs(e.stageY-mouseStartY)>100){
 				if(e.stageY > mouseStartY){
-						setGravity(0,1); // up flick
+						setGravity(0,1); // down flick
 					} else {
-						setGravity(0,-1); //down flick
+						setGravity(0,-1); //up flick
 				}
 			}
 		}
 	}
 	public function onMouseUp(e:MouseEvent) {
-		turnOffGravity();
-		mouseActive = false;
 		if(gameOver){
 			restart();
 		}
+		turnOffGravity();
+		mouseActive = false;
+		
 	}
 
 	public function onKeyDown(e:KeyboardEvent) {
