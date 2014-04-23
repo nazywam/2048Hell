@@ -16,5 +16,6 @@
 	
 	<assets path="assets/fonts" rename="fonts" />
 	<assets path="assets/pieces" rename="pieces" />
-	
+	<assets path="assets/" rename="assets" />
+	<icon path="assets/icon.svg" />
 </project>

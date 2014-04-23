@@ -15,6 +15,10 @@ import nape.shape.Polygon;
 import nape.space.Space;
 import nape.util.BitmapDebug;
 import openfl.Assets;
+import format.SVG;
+
+import flash.events.AccelerometerEvent;
+import flash.sensors.Accelerometer;
 
 class Board extends Sprite {
 
@@ -28,22 +32,36 @@ class Board extends Sprite {
 	var maxN = 0;
 	var gameOver = false;
 
+	var controlByMouse : Bool;
+
 	var mouseStartX : Float;
 	var mouseStartY : Float;
 	var mouseActive : Bool;
 
-	var gravityX : Int;
-	var fravityY : Int;
+	var prevX : Float;
+	var prevY : Float;
+	var prevZ : Float;
+	var shakeCount : Int;
+
+
+	var tiled : Bool;
 
 	var scale : Float;
+
 	public function new() {
 		super();
 		
 		scaleX = scaleY = Math.min(flash.Lib.current.stage.stageWidth/500, flash.Lib.current.stage.stageHeight/500);
 		scale = scaleX;
 
-		mouseActive = false;
+		prevX = 0;
+		prevY = 0;
+		prevZ = 0;
+		shakeCount = 0;
 
+		controlByMouse = true;
+		mouseActive = false;
+		tiled = true;
 		pieces = new List();
 		space = new Space(new Vec2(0, 0));
 		
@@ -78,12 +96,25 @@ class Board extends Sprite {
 		} else {
 			y = (flash.Lib.current.stage.stageHeight - height)/2;
 		}
+
+		var sprite = new Sprite();
+		var svg = new SVG(openfl.Assets.getText("assets/title.svg"));
+		svg.render(sprite.graphics, 0,0, 88, 17);
+		flash.Lib.current.addChild(sprite); 
+		
+		sprite.scaleX = Math.min(flash.Lib.current.stage.stageWidth/(312), y/(60));
+		sprite.scaleY = sprite.scaleX;
+
+		sprite.x = (flash.Lib.current.stage.stageWidth-sprite.width)/2-25;
+		sprite.y = (y-sprite.height)/2;
+
+		var acc = new Accelerometer();
+		acc.addEventListener(AccelerometerEvent.UPDATE, onAccUpdate);
+
 	}
 	
 	public function init() {
 		addEventListener(Event.ENTER_FRAME, tick);
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-		stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
 		stage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -92,15 +123,13 @@ class Board extends Sprite {
 	
 	public function destroy() {
 		removeEventListener(Event.ENTER_FRAME, tick);
-		stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-		stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 
 		stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 	}
 	
-	private function setGravity(x,y) {
+	private function setGravity(x : Float,y : Float) {
 		var power = 800;
 		space.gravity.setxy(power*x, power*y);
 	}
@@ -115,27 +144,54 @@ class Board extends Sprite {
 			board.init();
 		}
 	}
+	public function onAccUpdate(e : AccelerometerEvent){
+		var xAcc = e.accelerationX;
+		var yAcc = e.accelerationY;
+		var zAcc = e.accelerationZ;
+
+		if(!controlByMouse){
+			if(Math.abs(xAcc)<0.15 && Math.abs(yAcc)<0.15 && !tiled){
+			addRandom();
+			}	
+			setGravity(-xAcc*2,yAcc*2);
+		}
+
+		var bound = 0.5;
+		if(Math.abs(prevX-xAcc) > bound && Math.abs(prevY-yAcc) > bound && Math.abs(prevZ-zAcc) > bound){
+			shakeCount++;
+			if(shakeCount>4){
+				shakeCount=0;
+				switchControl();
+			}
+		}
+
+		prevX = xAcc;
+		prevY = yAcc;
+		prevZ = zAcc;
+
+	}
 	public function onMouseDown(e:MouseEvent) {
-		trace(("click " + Std.string(e.stageX) + " " + Std.string(e.stageY)));
 		mouseStartX = e.stageX;
 		mouseStartY = e.stageY;
 
 		mouseActive = true;
 	}
 	public function onMouseMove(e:MouseEvent) {
-		if(mouseActive){
-			if(Math.abs(e.stageX-mouseStartX)>100){
-				if(e.stageX > mouseStartX){
-						setGravity(1,0); //right flick
-					} else {
-						setGravity(-1,0); //left flick
+		if(controlByMouse){
+			if(mouseActive){
+				if(Math.abs(e.stageX-mouseStartX)>100){
+					if(e.stageX > mouseStartX){
+							setGravity(1,0); //right flick
+						} else {
+							setGravity(-1,0); //left flick
+					}
 				}
-			}
-			else if(Math.abs(e.stageY-mouseStartY)>100){
-				if(e.stageY > mouseStartY){
-						setGravity(0,1); // down flick
-					} else {
-						setGravity(0,-1); //up flick
+				else if(Math.abs(e.stageY-mouseStartY)>100){
+					if(e.stageY > mouseStartY){
+							setGravity(0,1); // down flick
+						} else {
+							setGravity(0,-1); //up flick
+					}
 				}
 			}
 		}
@@ -144,33 +200,12 @@ class Board extends Sprite {
 		if(gameOver){
 			restart();
 		}
-		turnOffGravity();
+		if(controlByMouse){
+			turnOffGravity();
+		}
 		mouseActive = false;
 		
 	}
-
-	public function onKeyDown(e:KeyboardEvent) {
-		switch(Std.int(e.keyCode)) {
-			case 37, 65:
-				setGravity(-1,0);
-			case 38, 87:
-				setGravity(0,-1);
-			case 39, 68:
-				setGravity(1,0);
-			case 40, 83:
-				setGravity(0, 1);
-			case 32, 82:
-				restart();
-		}
-	}
-	
-	public function onKeyUp(e:KeyboardEvent) {
-		switch(Std.int(e.keyCode)) {
-			case 37, 65, 38, 87, 39, 68, 40, 83:
-				turnOffGravity();
-		}
-	}
-	
 	function turnOffGravity() {
 		if(!gameOver) {
 			space.gravity.setxy(0, 0);
@@ -225,7 +260,11 @@ class Board extends Sprite {
 		Main.kongregate.submitStat("score", score);
 		Main.kongregate.submitStat("maxN", 1 << maxN);
 	}
-	
+	private function switchControl(){
+
+		controlByMouse = !controlByMouse;
+
+	}
 	public function tick(?_) {
 		
 		if (gameOver) {

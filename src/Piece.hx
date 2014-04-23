@@ -28,7 +28,7 @@ class Piece extends Sprite {
 		super();
 		this.n = n;
 
-		svg = new SVG(openfl.Assets.getText("pieces/" + Std.string(Math.pow(2, n)) + ".svg"));
+		svg = new SVG(openfl.Assets.getText("assets/pieces/" + Std.string(Math.pow(2, n)) + ".svg"));
 		svg.render(this.graphics, -size/2+3,-size/2+3,size,size);
 
 		body = new Body(BodyType.DYNAMIC);
@@ -47,6 +47,10 @@ class Piece extends Sprite {
 		if (scaleX < 1) {
 			scaleX += 0.1;
 			scaleY = scaleX;
+			if(scaleX>1){
+				scaleX = 1;
+				scaleY = 1;
+			}
 		}
 		x = body.position.x;
 		y = body.position.y;
