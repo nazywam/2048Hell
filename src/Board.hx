@@ -39,6 +39,9 @@ class Board extends Sprite {
 	var maxN = 0;
 	var gameOver = false;
 
+	var windowOn : Bool;
+	var s : Sprite;
+
 	var controlByMouse : Bool;
 
 	var mouseStartX : Float;
@@ -57,7 +60,7 @@ class Board extends Sprite {
 
 	public function new() {
 		super();
-		
+
 		AD.init("ca-app-pub-6467747076945839/7051482776", AD.LEFT, AD.BOTTOM, AD.BANNER_LANDSCAPE, false);
 		AD.show();
 
@@ -68,13 +71,6 @@ class Board extends Sprite {
 		prevY = 0;
 		prevZ = 0;
 		shakeCount = 0;
-
-		highScore = SharedObject.getLocal("reloaded");
-		trace(highScore.data.value);
-		if (highScore.data.value == null) {
-
-            highScore.data.value = 0;
-        }
 
 		controlByMouse = true;
 		mouseActive = false;
@@ -128,6 +124,20 @@ class Board extends Sprite {
 		var acc = new Accelerometer();
 		acc.addEventListener(AccelerometerEvent.UPDATE, onAccUpdate);
 
+		highScore = SharedObject.getLocal("highScore");
+		if (highScore.data.value == null) {
+			highScore.data.value = 0;
+			highScore.flush();
+
+					windowOn = true;
+			s = new Sprite();
+			s.graphics.beginFill(0xffffff, 0.5);
+			s.graphics.drawRect(0, 0, width, height);
+			s.graphics.endFill();
+			addChildAt(s, 1);
+			var svg = new SVG(openfl.Assets.getText("assets/howTo.svg"));
+			svg.render(s.graphics, 0, 0, 500, 500);
+        }
 	}
 	
 	public function init() {
@@ -176,7 +186,7 @@ class Board extends Sprite {
 		var bound = 0.5;
 		if(Math.abs(prevX-xAcc) > bound && Math.abs(prevY-yAcc) > bound && Math.abs(prevZ-zAcc) > bound){
 			shakeCount++;
-			if(shakeCount>4){
+			if(shakeCount>=3){
 				shakeCount=0;
 				switchControl();
 			}
@@ -217,8 +227,13 @@ class Board extends Sprite {
 		if(gameOver){
 			restart();
 		}
-		if(controlByMouse){
-			turnOffGravity();
+		if(!windowOn){
+			if(controlByMouse){
+				turnOffGravity();
+			}
+		} else {
+			windowOn = false;
+			removeChild(s);
 		}
 		mouseActive = false;
 		
@@ -270,7 +285,9 @@ class Board extends Sprite {
 	private function endGame() {
 		gameOver = true;
 		
+		
 		highScore.data.value = Math.max(highScore.data.value, score);
+		highScore.flush();
 
 		var over = new Sprite();
 		over.graphics.beginFill(0xffffff, 0.5);
@@ -301,7 +318,7 @@ class Board extends Sprite {
 	}
 	public function tick(?_) {
 		
-		if (gameOver) {
+		if (gameOver || windowOn) {
 			return;
 		}
 		
