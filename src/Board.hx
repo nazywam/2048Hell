@@ -232,31 +232,49 @@ class Board extends Sprite {
 			piece.scaleDown();
 		}
 	}
-	
-	private function endGame() {
-		gameOver = true;
+	public function getText(string : String, fontSize : Int){
 		var format = new TextFormat();
-		format.font = Assets.getFont("fonts/FreeSans.ttf").fontName;
+		format.font = Assets.getFont("fonts/ClearSans-Bold.ttf").fontName;
 		
-		format.size = 48;
+		format.size = fontSize;
 		format.color = 0;
 		
-		var sprite = new Sprite();
-		sprite.graphics.beginFill(0xffffff, 0.25);
-		sprite.graphics.drawRect(0, 0, width, height);
-		sprite.graphics.endFill();
-		
+
+
 		var text = new TextField();
 		text.defaultTextFormat = format;
-		text.text = "Game Over!";
+		text.text = string;
 		text.selectable = false;
 		text.autoSize = TextFieldAutoSize.LEFT;
 		text.embedFonts = true;
-		sprite.addChild(text);
-		text.x = sprite.width / (2*scale) - text.width/2;
-		text.y = (sprite.height - text.height) / (2*scale);
+		
+		return text;
+	}
+	private function endGame() {
+		gameOver = true;
+		
+		
+		var over = new Sprite();
+		over.graphics.beginFill(0xffffff, 0.45);
+		over.graphics.drawRect(0, 0, width, height);
+		over.graphics.endFill();
+		var overText = getText("Game Over", 64);
+		over.addChild(overText);
+		overText.x = over.width / (2*scale) - overText.width/2;
+		overText.y = ((over.height - overText.height) / (7*scale))*2;	
+		addChild(over);
 
-		addChild(sprite);
+		var scoreText = getText("Score: " + Std.string(score), 48);
+		scoreText.x = over.width / (2*scale) - scoreText.width/2;
+		scoreText.y = ((over.height - scoreText.height) / (5*scale))*3;	
+		addChild(scoreText);
+
+		var highScoreText = getText("Highscore: " + Std.string(score), 48);
+		highScoreText.x = over.width / (2*scale) - highScoreText.width/2;
+		highScoreText.y = ((over.height - highScoreText.height) / (5*scale))*4;	
+		addChild(highScoreText);		
+
+
 	}
 	private function switchControl(){
 
@@ -301,7 +319,7 @@ class Board extends Sprite {
 		piece.body.space = space;
 		pieces.add(piece);
 		addChild(piece);
-		score += piece.n;
+		score += Std.int(Math.pow(2,piece.n));
 		if (piece.n > maxN) {
 			maxN = piece.n;
 		}
