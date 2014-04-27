@@ -6,8 +6,6 @@ import flash.Lib;
 
 class Main extends Sprite {
 	var inited:Bool;
-
-	public static var kongregate = new Kongregate();
 	
 	function resize(e) {
 		if (!inited) init();

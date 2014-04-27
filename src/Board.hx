@@ -64,7 +64,7 @@ class Board extends Sprite {
 		tiled = true;
 		pieces = new List();
 		space = new Space(new Vec2(0, 0));
-		
+
 		graphics.beginFill(0xbbada0);
 		graphics.drawRoundRect(0, 0, 500, 500, 12, 12);
 		graphics.endFill();
@@ -84,11 +84,11 @@ class Board extends Sprite {
 			shape.filter.collisionGroup = -1;
 			shape.filter.collisionMask = -1;
 			wall.shapes.add(shape);
-		}	
-		f(new Polygon(Polygon.rect( -500, -500+12, 1500, 500)));
-		f(new Polygon(Polygon.rect( -500, 500-12, 1500, 500)));
-		f(new Polygon(Polygon.rect(-500+12, -500, 500, 1500)));
-		f(new Polygon(Polygon.rect(500 - 12, -500, 500, 1500)));
+		}	 
+		f(new Polygon(Polygon.rect(12, -500+12, 500, 500)));
+		f(new Polygon(Polygon.rect(500-12, 12, 500, 500)));
+		f(new Polygon(Polygon.rect(12, 500-12, 500, 500)));
+		f(new Polygon(Polygon.rect(-500+12, 12, 500, 500)));
 		wall.space = space;
 
 		if(Math.abs(width-flash.Lib.current.stage.stageWidth) > Math.abs(height-flash.Lib.current.stage.stageHeight)){
@@ -257,8 +257,6 @@ class Board extends Sprite {
 		text.y = (sprite.height - text.height) / (2*scale);
 
 		addChild(sprite);
-		Main.kongregate.submitStat("score", score);
-		Main.kongregate.submitStat("maxN", 1 << maxN);
 	}
 	private function switchControl(){
 
