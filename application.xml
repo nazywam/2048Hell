@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="2048 Hell" package="com.github.banthar.hell2048" version="0.0.0" company="" />
+	<meta title="2048 Hell" package="com.github.nazywam.Hell2048" version="1.0.0" company="" />
 	<android target-sdk-version="19" />
 	<app main="Main" file="2048hell" path="bin" />
 	
@@ -13,9 +13,15 @@
 	<haxelib name="openfl" />
 	<haxelib name="nape" />
 	<haxelib name="svg" />
+
+	<haxelib name="admob" />
 	
+	<java path="android-template/libs/google-play-services.jar" if="android" />
+	<template path="android-template/AndroidManifest.xml" rename="AndroidManifest.xml" if="android" />
+	<template path="android-template/src/org/haxe/lime/GameActivity.java" rename="src/org/haxe/lime/GameActivity.java" if="android" />
+
 	<assets path="assets/fonts" rename="fonts" />
 	<assets path="assets/pieces" rename="pieces" />
 	<assets path="assets/" rename="assets" />
-	<icon path="assets/icon.svg" />
+	<icon path="assets/pieces/2048.svg" />
 </project>

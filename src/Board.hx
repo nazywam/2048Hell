@@ -17,15 +17,22 @@ import nape.util.BitmapDebug;
 import openfl.Assets;
 import format.SVG;
 
+import admob.AD;
+
+import flash.net.SharedObject;
+
 import flash.events.AccelerometerEvent;
 import flash.sensors.Accelerometer;
+
 
 class Board extends Sprite {
 
 	static var size = 107;
 	static var pad = size + 14;
 	static var offset = 15;
-	
+
+	var highScore : SharedObject;
+
 	var space:Space;
 	var pieces:List<Piece>;
 	var score = 0;
@@ -51,6 +58,9 @@ class Board extends Sprite {
 	public function new() {
 		super();
 		
+		AD.init("ca-app-pub-6467747076945839/7051482776", AD.LEFT, AD.BOTTOM, AD.BANNER_LANDSCAPE, false);
+		AD.show();
+
 		scaleX = scaleY = Math.min(flash.Lib.current.stage.stageWidth/500, flash.Lib.current.stage.stageHeight/500);
 		scale = scaleX;
 
@@ -58,6 +68,13 @@ class Board extends Sprite {
 		prevY = 0;
 		prevZ = 0;
 		shakeCount = 0;
+
+		highScore = SharedObject.getLocal("reloaded");
+		trace(highScore.data.value);
+		if (highScore.data.value == null) {
+
+            highScore.data.value = 0;
+        }
 
 		controlByMouse = true;
 		mouseActive = false;
@@ -253,12 +270,13 @@ class Board extends Sprite {
 	private function endGame() {
 		gameOver = true;
 		
-		
+		highScore.data.value = Math.max(highScore.data.value, score);
+
 		var over = new Sprite();
-		over.graphics.beginFill(0xffffff, 0.45);
+		over.graphics.beginFill(0xffffff, 0.5);
 		over.graphics.drawRect(0, 0, width, height);
 		over.graphics.endFill();
-		var overText = getText("Game Over", 64);
+		var overText = getText("Game Over", 72);
 		over.addChild(overText);
 		overText.x = over.width / (2*scale) - overText.width/2;
 		overText.y = ((over.height - overText.height) / (7*scale))*2;	
@@ -269,7 +287,7 @@ class Board extends Sprite {
 		scoreText.y = ((over.height - scoreText.height) / (5*scale))*3;	
 		addChild(scoreText);
 
-		var highScoreText = getText("Highscore: " + Std.string(score), 48);
+		var highScoreText = getText("Highscore: " + Std.string(highScore.data.value), 48);
 		highScoreText.x = over.width / (2*scale) - highScoreText.width/2;
 		highScoreText.y = ((over.height - highScoreText.height) / (5*scale))*4;	
 		addChild(highScoreText);		
