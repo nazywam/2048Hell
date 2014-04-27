@@ -203,7 +203,7 @@ class Board extends Sprite {
 		piece.body.space = space;
 		pieces.add(piece);
 		addChild(piece);
-		score += piece.n;
+		score += Std.int(Math.pow(2, piece.n));
 		if (piece.n > maxN) {
 			maxN = piece.n;
 		}
