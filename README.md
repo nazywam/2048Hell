@@ -9,3 +9,6 @@ http://gabrielecirulli.github.io/2048/
 
 and:
 https://xkcd.com/724/
+
+and:
+http://www.kongregate.com/games/banthar/2048-hell
